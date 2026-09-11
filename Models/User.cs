@@ -10,6 +10,7 @@ public class User
     public DateOnly DateOfBirth {get; set;} // to calculate age
 
     public ActivityLevel ActivityLevel {get; set;}
+    public ICollection<ExerciseLogEntry> ExerciseLogEntries { get; set; } = new List<ExerciseLogEntry>();
 }
 
 public enum ActivityLevel
