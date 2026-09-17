@@ -18,7 +18,17 @@ public class ExerciseLogController : ControllerBase
     {
         var entry = await _service.CreateAsync(GetUserId(), dto);
         if (entry == null) return BadRequest("Invalid exercise type.");
-        return Created($"/api/exerciselog/{entry.Id}", entry);
+
+            var response = new ExerciseLogResponseDto
+            {
+                Id = entry.Id,
+                ExerciseTypeId = entry.ExerciseTypeId,
+                DurationMinutes = entry.DurationMinutes,
+                LoggedTimestamp = entry.LoggedTimestamp,
+                CaloriesBurned = entry.CaloriesBurned
+            };
+
+        return Created($"/api/exerciselog/{entry.Id}", response);
     }
 
     [HttpDelete("{logId}")]
@@ -38,6 +48,14 @@ public class ExerciseLogController : ControllerBase
     public async Task<IActionResult> GetEntries()
     {
         var logEntries = await _service.GetAllForUserAsync(GetUserId());
-        return Ok(logEntries);
+        var response = logEntries.Select(e => new ExerciseLogResponseDto
+        {
+            Id = e.Id,
+            ExerciseTypeId = e.ExerciseTypeId,
+            DurationMinutes = e.DurationMinutes,
+            LoggedTimestamp = e.LoggedTimestamp,
+            CaloriesBurned = e.CaloriesBurned
+        }).ToList();
+        return Ok(response);
     }
 }

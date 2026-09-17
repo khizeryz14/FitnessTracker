@@ -7,4 +7,5 @@ public class ExerciseLogEntry
     public DateTime LoggedTimestamp {get; set;}
     public User User {get; set;}
     public ExerciseType ExerciseType {get; set;}
+    public double CaloriesBurned { get; set; }
 }

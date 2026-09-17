@@ -12,9 +12,14 @@ public class ExerciseLogService : IExerciseLogService
 
     public async Task<ExerciseLogEntry?> CreateAsync(Guid userId, ExerciseLogCreateDto dto)
     {
-        if (!await _db.ExerciseTypes.AnyAsync( e => e.Id == dto.ExerciseTypeId)){
-            return null;
-        }
+        var exerciseType = await _db.ExerciseTypes.FindAsync(dto.ExerciseTypeId);
+        if (exerciseType == null) return null;
+
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null) return null;
+
+        var caloriesBurned = CalorieCalculator.CalculateCaloriesBurned(
+            exerciseType.MetValue, user.Weight, dto.DurationMinutes);
 
         var logEntry = new ExerciseLogEntry
         {
@@ -23,11 +28,11 @@ public class ExerciseLogService : IExerciseLogService
             UserId = userId,
             DurationMinutes = dto.DurationMinutes,
             LoggedTimestamp = dto.LoggedTimestamp,
+            CaloriesBurned = caloriesBurned
         };
 
-        _db.ExerciseLogEntries.Add(logEntry);   // stages the insert — not written to DB yet
+        _db.ExerciseLogEntries.Add(logEntry);
         await _db.SaveChangesAsync();
-
         return logEntry;
     }
 
