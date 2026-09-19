@@ -29,6 +29,11 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddHttpClient<UsdaFoodClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Usda:BaseUrl"]!);
+});
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
