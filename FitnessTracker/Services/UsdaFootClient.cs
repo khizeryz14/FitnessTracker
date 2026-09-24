@@ -9,11 +9,13 @@ public class UsdaFoodClient
         _config = config;
     }
 
-    public async Task<string> SearchFoodAsync(string query)
+    public async Task<List<UsdaFood>> SearchFoodAsync(string query)
     {
         var apiKey = _config["Usda:ApiKey"];
-        var response = await _httpClient.GetAsync($"foods/search?query={query}&api_key={apiKey}");
+        var response = await _httpClient.GetAsync($"foods/search?query={query}&pageSize=5&api_key={apiKey}");
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadAsStringAsync();
+
+        var result = await response.Content.ReadFromJsonAsync<UsdaSearchResponse>();
+        return result?.Foods ?? new List<UsdaFood>();
     }
 }
