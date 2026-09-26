@@ -7,6 +7,8 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<ExerciseType> ExerciseTypes { get; set; }
     public DbSet<ExerciseLogEntry> ExerciseLogEntries { get; set; }
+    public DbSet<FoodItem> FoodItems { get; set; }
+    public DbSet<FoodLogEntry> FoodLogEntries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
