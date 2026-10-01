@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,14 +18,35 @@ public class FoodLogController : ControllerBase
     {
         var entry = await _service.CreateAsync(GetUserId(), dto);
         if (entry == null) return BadRequest("Invalid food item.");
-        return Created($"/api/foodlog/{entry.Id}", entry);
+
+        var foodEntry = new FoodLogResponseDto
+        {
+            Id = entry.Id,
+            UserId = entry.UserId,
+            FoodItemId = entry.FoodItemId,
+            QuantityGrams = entry.QuantityGrams,
+            LoggedTimestamp = entry.LoggedTimestamp,
+            CaloriesConsumed = entry.CaloriesConsumed,
+        };
+        return Created($"/api/foodlog/{entry.Id}", foodEntry);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetEntries()
     {
         var entries = await _service.GetAllForUserAsync(GetUserId());
-        return Ok(entries);
+
+        var response = entries.Select(e => new FoodLogResponseDto
+        {
+            Id = e.Id,
+            UserId = e.UserId,
+            FoodItemId = e.FoodItemId,
+            QuantityGrams = e.QuantityGrams,
+            LoggedTimestamp = e.LoggedTimestamp,
+            CaloriesConsumed = e.CaloriesConsumed
+        }).ToList();
+
+        return Ok(response);
     }
 
     [HttpDelete("{logId}")]

@@ -16,17 +16,20 @@ public class FoodItemService : IFoodItemService
         return await _usdaClient.SearchFoodAsync(query);
     }
 
-    public async Task<FoodItem> GetOrCreateFromUsdaAsync(int fdcId, string name, double caloriesPer100g)
+    public async Task<FoodItem> GetOrCreateFromUsdaAsync(int fdcId)
     {
         var existing = await _db.FoodItems.FirstOrDefaultAsync(f => f.FdcId == fdcId);
         if (existing is not null) return existing;
+
+        var usdaFood = await _usdaClient.GetFoodDetailsAsync(fdcId);
+        var energy = usdaFood?.FoodNutrients?.FirstOrDefault(n => n.Nutrient?.Name == "Energy")?.Amount ?? 0;
 
         var foodItem = new FoodItem
         {
             Id = Guid.NewGuid(),
             FdcId = fdcId,
-            Name = name,
-            CaloriesPer100g = caloriesPer100g
+            Name = usdaFood?.Description ?? "Unknown",
+            CaloriesPer100g = energy
         };
 
         _db.FoodItems.Add(foodItem);

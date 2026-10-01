@@ -17,9 +17,9 @@ public class FoodItemsController : ControllerBase
     }
 
     [HttpPost("from-usda")]
-    public async Task<IActionResult> CreateFromUsda(int fdcId, string name, double caloriesPer100g)
+    public async Task<IActionResult> CreateFromUsda(int fdcId)
     {
-        var foodItem = await _service.GetOrCreateFromUsdaAsync(fdcId, name, caloriesPer100g);
+        var foodItem = await _service.GetOrCreateFromUsdaAsync(fdcId);
         return Ok(foodItem);
     }
 

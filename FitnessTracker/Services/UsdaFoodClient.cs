@@ -18,4 +18,12 @@ public class UsdaFoodClient
         var result = await response.Content.ReadFromJsonAsync<UsdaSearchResponse>();
         return result?.Foods ?? new List<UsdaFood>();
     }
+
+    public async Task<UsdaFoodDetail?> GetFoodDetailsAsync(int fdcId)
+    {
+        var apiKey = _config["Usda:ApiKey"];
+        var response = await _httpClient.GetAsync($"food/{fdcId}?api_key={apiKey}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<UsdaFoodDetail>();
+    }
 }
