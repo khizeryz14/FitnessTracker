@@ -52,9 +52,31 @@ public class ExerciseLogService : IExerciseLogService
         return true;
     }
 
-    public async Task<List<ExerciseLogEntry>> GetAllForUserAsync(Guid userId)
+    public async Task<PagedResult<ExerciseLogEntry>> GetAllForUserAsync(
+        Guid userId, DateTime? from, DateTime? to, int page, int pageSize)
     {
-        var logEntries = await _db.ExerciseLogEntries.Where(e => e.UserId == userId).ToListAsync();
-        return logEntries;
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 50);
+
+        var query = _db.ExerciseLogEntries.Where(e => e.UserId == userId);
+
+        if (from.HasValue) query = query.Where(e => e.LoggedTimestamp >= from.Value);
+        if (to.HasValue)   query = query.Where(e => e.LoggedTimestamp <= to.Value);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(e => e.LoggedTimestamp)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<ExerciseLogEntry>
+        {
+            Items = items,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
+        };
     }
 }

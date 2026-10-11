@@ -45,17 +45,27 @@ public class ExerciseLogController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetEntries()
+    public async Task<IActionResult> GetEntries(
+        DateTime? from, DateTime? to, int page = 1, int pageSize = 10)
     {
-        var logEntries = await _service.GetAllForUserAsync(GetUserId());
-        var response = logEntries.Select(e => new ExerciseLogResponseDto
+        if (from.HasValue) from = DateTime.SpecifyKind(from.Value, DateTimeKind.Utc);
+        if (to.HasValue)   to   = DateTime.SpecifyKind(to.Value, DateTimeKind.Utc);
+
+        var result = await _service.GetAllForUserAsync(GetUserId(), from, to, page, pageSize);
+
+        return Ok(new PagedResult<ExerciseLogResponseDto>
         {
-            Id = e.Id,
-            ExerciseTypeId = e.ExerciseTypeId,
-            DurationMinutes = e.DurationMinutes,
-            LoggedTimestamp = e.LoggedTimestamp,
-            CaloriesBurned = e.CaloriesBurned
-        }).ToList();
-        return Ok(response);
+            Items = result.Items.Select(e => new ExerciseLogResponseDto
+            {
+                Id = e.Id,
+                ExerciseTypeId = e.ExerciseTypeId,
+                DurationMinutes = e.DurationMinutes,
+                LoggedTimestamp = e.LoggedTimestamp,
+                CaloriesBurned = e.CaloriesBurned
+            }).ToList(),
+            Page = result.Page,
+            PageSize = result.PageSize,
+            TotalCount = result.TotalCount
+        });
     }
 }

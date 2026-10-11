@@ -32,19 +32,29 @@ public class FoodLogController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetEntries()
+    public async Task<IActionResult> GetEntries(DateTime? from, DateTime? to, int page = 1, int pageSize = 10)
     {
-        var entries = await _service.GetAllForUserAsync(GetUserId());
+        var entries = await _service.GetAllForUserAsync(GetUserId(), from, to, page, pageSize);
 
-        var response = entries.Select(e => new FoodLogResponseDto
+        if (from.HasValue) from = DateTime.SpecifyKind(from.Value, DateTimeKind.Utc);
+        if (to.HasValue)   to   = DateTime.SpecifyKind(to.Value, DateTimeKind.Utc);
+
+        var response = new PagedResult<FoodLogResponseDto>
         {
-            Id = e.Id,
-            UserId = e.UserId,
-            FoodItemId = e.FoodItemId,
-            QuantityGrams = e.QuantityGrams,
-            LoggedTimestamp = e.LoggedTimestamp,
-            CaloriesConsumed = e.CaloriesConsumed
-        }).ToList();
+            Items = entries.Items.Select(e => new FoodLogResponseDto
+            {
+                Id = e.Id,
+                UserId = e.UserId,
+                FoodItemId = e.FoodItemId,
+                QuantityGrams = e.QuantityGrams,
+                LoggedTimestamp = e.LoggedTimestamp,
+                CaloriesConsumed = e.CaloriesConsumed
+            }).ToList(),
+            Page = entries.Page,
+            PageSize = entries.PageSize,
+            TotalCount = entries.TotalCount
+        };
+
 
         return Ok(response);
     }

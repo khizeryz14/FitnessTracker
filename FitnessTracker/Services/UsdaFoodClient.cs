@@ -6,10 +6,11 @@ public class UsdaFoodClient
     private readonly IConfiguration _config;
     private readonly IMemoryCache _cache;
 
-    public UsdaFoodClient(HttpClient httpClient, IConfiguration config)
+    public UsdaFoodClient(HttpClient httpClient, IConfiguration config, IMemoryCache cache)
     {
         _httpClient = httpClient;
         _config = config;
+        _cache = cache;
     }
 
     public async Task<List<UsdaFood>> SearchFoodAsync(string query)
