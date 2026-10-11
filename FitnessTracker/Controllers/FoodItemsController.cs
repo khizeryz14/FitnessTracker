@@ -9,12 +9,20 @@ public class FoodItemsController : ControllerBase
     private readonly IFoodItemService _service;
     public FoodItemsController(IFoodItemService service) => _service = service;
 
+
     [HttpGet("search")]
     public async Task<IActionResult> Search(string query)
     {
-        var results = await _service.SearchAsync(query);
-        return Ok(results);
+        try{
+            var results = await _service.SearchAsync(query);
+            return Ok(results);
+        }
+        catch (HttpRequestException)
+        {
+            return StatusCode(503, "Food API not available. Add manually via POST /api/fooditems/manual");
+        }
     }
+    
 
     [HttpPost("from-usda")]
     public async Task<IActionResult> CreateFromUsda(int fdcId)
