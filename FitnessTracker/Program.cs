@@ -41,6 +41,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IExerciseLogService, ExerciseLogService>();
 builder.Services.AddScoped<IFoodItemService, FoodItemService>();
 builder.Services.AddScoped<IFoodLogService, FoodLogService>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddScoped<IHydrationLogService, HydrationLogService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

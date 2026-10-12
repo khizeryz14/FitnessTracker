@@ -146,6 +146,28 @@ namespace FitnessTracker.Migrations
                     b.ToTable("FoodLogEntries");
                 });
 
+            modelBuilder.Entity("HydrationLogEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("AmountMl")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime>("LoggedTimestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("HydrationLogEntries");
+                });
+
             modelBuilder.Entity("User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -222,11 +244,24 @@ namespace FitnessTracker.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("HydrationLogEntry", b =>
+                {
+                    b.HasOne("User", "User")
+                        .WithMany("HydrationLogEntries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("User", b =>
                 {
                     b.Navigation("ExerciseLogEntries");
 
                     b.Navigation("FoodLogEntries");
+
+                    b.Navigation("HydrationLogEntries");
                 });
 #pragma warning restore 612, 618
         }
