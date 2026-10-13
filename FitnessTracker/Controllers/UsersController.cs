@@ -12,8 +12,13 @@ public class UsersController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(UserRegisterDto dto)
     {
-        var user = await _userService.RegisterAsync(dto);
-        if (user == null) return BadRequest("Email already in use.");
+        var result = await _userService.RegisterAsync(dto);
+        if (!result.Success)
+            return result.Kind == ErrorKind.Conflict
+                ? Conflict(new { error = result.Error })          // 409
+                : BadRequest(new { error = result.Error });       // 400
+
+        var user = result.Value!;
         return Created($"/api/users/{user.Id}", new { user.Id, user.Email });
     }
 

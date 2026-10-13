@@ -44,6 +44,8 @@ builder.Services.AddScoped<IFoodLogService, FoodLogService>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IHydrationLogService, HydrationLogService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -65,6 +67,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
