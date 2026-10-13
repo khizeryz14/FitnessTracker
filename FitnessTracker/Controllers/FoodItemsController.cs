@@ -32,9 +32,9 @@ public class FoodItemsController : ControllerBase
     }
 
     [HttpPost("manual")]
-    public async Task<IActionResult> CreateManual(string name, double caloriesPer100g)
+    public async Task<IActionResult> CreateManual(FoodItemManualCreateDto dto)
     {
-        var foodItem = await _service.CreateManualAsync(name, caloriesPer100g);
+        var foodItem = await _service.CreateManualAsync(dto.Name, dto.CaloriesPer100g);
         return Ok(foodItem);
     }
 }

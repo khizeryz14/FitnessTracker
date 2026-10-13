@@ -1,5 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 public class HydrationLogCreateDto
 {
-    public double AmountMl { get; set; }
+    [Range(1, 5000)] public double AmountMl { get; set; }
     public DateTime LoggedTimestamp { get; set; }
 }
