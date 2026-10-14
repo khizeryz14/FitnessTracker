@@ -8,12 +8,15 @@ public class ReminderService : IReminderService
     private readonly AppDbContext _db;
     private readonly TimeProvider _clock;
     private readonly ReminderOptions _options;
+    private readonly INotificationPublisher _publisher;
 
-    public ReminderService(AppDbContext db, TimeProvider clock, IOptions<ReminderOptions> options)
+    public ReminderService(AppDbContext db, TimeProvider clock,
+        IOptions<ReminderOptions> options, INotificationPublisher publisher)
     {
         _db = db;
         _clock = clock;
         _options = options.Value;
+        _publisher = publisher;
     }
 
     public async Task<int> RunAsync(CancellationToken ct = default)
@@ -68,6 +71,10 @@ public class ReminderService : IReminderService
 
         _db.Notifications.AddRange(created);
         await _db.SaveChangesAsync(ct);
+
+        foreach (var n in created)
+            await _publisher.PublishAsync(n);   // save first, then push
+
         return created.Count;
     }
 }

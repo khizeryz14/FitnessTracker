@@ -1,13 +1,23 @@
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Xunit;
+public class FakeNotificationPublisher : INotificationPublisher
+{
+    public List<Notification> Published { get; } = new();
 
+    public Task PublishAsync(Notification notification)
+    {
+        Published.Add(notification);
+        return Task.CompletedTask;
+    }
+}
 public class ReminderServiceTests
 {
     private static readonly DateTimeOffset Now = new(2026, 10, 13, 15, 0, 0, TimeSpan.Zero);
 
-    private static ReminderService CreateService(AppDbContext db) =>
-        new(db, new FakeTimeProvider(Now), Options.Create(new ReminderOptions { MinGapMinutes = 180 }));
+    private static ReminderService CreateService(AppDbContext db, INotificationPublisher publisher) =>
+        new(db, new FakeTimeProvider(Now),
+            Options.Create(new ReminderOptions { MinGapMinutes = 180 }), publisher);
 
     private static async Task SeedAsync(AppDbContext db, double amountMl, int hourUtc)
     {
@@ -35,9 +45,15 @@ public class ReminderServiceTests
         using var testDb = new TestDb();
         await SeedAsync(testDb.Context, amountMl, hourUtc);
 
-        var created = await CreateService(testDb.Context).RunAsync();
+        var publisher = new FakeNotificationPublisher();
+        var service = CreateService(testDb.Context, publisher);
 
-        Assert.Equal(expected, created);
+        var first = await service.RunAsync();
+        var second = await service.RunAsync();
+
+        Assert.Equal(1, first);
+        Assert.Equal(0, second);
+        Assert.Single(publisher.Published);
     }
 
     [Fact]
@@ -45,7 +61,8 @@ public class ReminderServiceTests
     {
         using var testDb = new TestDb();
         await SeedAsync(testDb.Context, 250.0, 8);
-        var service = CreateService(testDb.Context);
+        var publisher = new FakeNotificationPublisher();
+        var service = CreateService(testDb.Context, publisher);
 
         var first = await service.RunAsync();
         var second = await service.RunAsync();
