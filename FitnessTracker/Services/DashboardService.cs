@@ -52,7 +52,7 @@ public class DashboardService : IDashboardService
             NetCalories = caloriesIn - (exerciseBurned + bmrSoFar),
             DailyCalorieTarget = bmrPerDay * BmrCalculator.ActivityMultiplier(user.ActivityLevel),
             HydrationMl = hydrationMl,
-            HydrationGoalMl = user.Weight * 35   // rule of thumb: ~35 ml per kg
+            HydrationGoalMl = HydrationCalculator.DailyGoalMl(user.Weight)   // rule of thumb: ~35 ml per kg
         };
     }
 }

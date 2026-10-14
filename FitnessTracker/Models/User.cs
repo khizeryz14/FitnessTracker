@@ -13,6 +13,7 @@ public class User
     public ICollection<ExerciseLogEntry> ExerciseLogEntries { get; set; } = new List<ExerciseLogEntry>();
     public ICollection<FoodLogEntry> FoodLogEntries { get; set; } = new List<FoodLogEntry>();
     public ICollection<HydrationLogEntry> HydrationLogEntries { get; set; } = new List<HydrationLogEntry>();
+    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }
 
 public enum ActivityLevel

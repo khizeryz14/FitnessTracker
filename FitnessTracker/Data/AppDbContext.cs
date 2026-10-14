@@ -10,6 +10,7 @@ public class AppDbContext : DbContext
     public DbSet<FoodItem> FoodItems { get; set; }
     public DbSet<FoodLogEntry> FoodLogEntries { get; set; }
     public DbSet<HydrationLogEntry> HydrationLogEntries { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
 {

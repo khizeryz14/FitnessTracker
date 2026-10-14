@@ -168,6 +168,36 @@ namespace FitnessTracker.Migrations
                     b.ToTable("HydrationLogEntries");
                 });
 
+            modelBuilder.Entity("Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -255,6 +285,17 @@ namespace FitnessTracker.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Notification", b =>
+                {
+                    b.HasOne("User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("User", b =>
                 {
                     b.Navigation("ExerciseLogEntries");
@@ -262,6 +303,8 @@ namespace FitnessTracker.Migrations
                     b.Navigation("FoodLogEntries");
 
                     b.Navigation("HydrationLogEntries");
+
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }
