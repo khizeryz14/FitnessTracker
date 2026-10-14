@@ -46,14 +46,10 @@ public class ReminderServiceTests
         await SeedAsync(testDb.Context, amountMl, hourUtc);
 
         var publisher = new FakeNotificationPublisher();
-        var service = CreateService(testDb.Context, publisher);
+        var created = await CreateService(testDb.Context, publisher).RunAsync();
 
-        var first = await service.RunAsync();
-        var second = await service.RunAsync();
-
-        Assert.Equal(1, first);
-        Assert.Equal(0, second);
-        Assert.Single(publisher.Published);
+        Assert.Equal(expected, created);
+        Assert.Equal(expected, publisher.Published.Count);   // pushed exactly what was created
     }
 
     [Fact]
@@ -69,5 +65,6 @@ public class ReminderServiceTests
 
         Assert.Equal(1, first);
         Assert.Equal(0, second);
+        Assert.Single(publisher.Published);   // the second run pushed nothing extra
     }
 }
