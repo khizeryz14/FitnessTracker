@@ -102,4 +102,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");
+app.MapGet("/health", () => Results.Ok("healthy"));
 app.Run();
