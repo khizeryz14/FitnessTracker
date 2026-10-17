@@ -116,7 +116,8 @@ The Dockerfile is multi-stage (SDK image builds, ASP.NET runtime image runs as a
 ## CI/CD and deployment
 
 - **CI:** GitHub Actions restores, builds and tests the solution, then builds the Docker image, on every push and pull request to `main`.
-- **Hosting:** Render (Docker web service, free tier) with a separate production database on Neon. Migrations are currently applied manually with `dotnet ef database update --connection "<prod connection string>"`.
+- **Hosting:** Render (Docker web service, free tier) with a separate production database on Neon.
+- **CD:** on every push to main, once build and tests pass, the pipeline applies EF Core migrations through a compiled migration bundle and then triggers a Render deploy via a deploy hook.
 
 ## Design decisions
 
@@ -134,4 +135,3 @@ The Dockerfile is multi-stage (SDK image builds, ASP.NET runtime image runs as a
 - Hydration is intake against a goal (about 35 ml per kg), not a time-decay model.
 - On the free host the app sleeps when idle, so the background worker only runs while it is awake. Running multiple instances would need a proper job scheduler.
 - Tests use SQLite, which cannot catch Postgres-specific behavior.
-- Migrations are applied manually.
