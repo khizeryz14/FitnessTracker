@@ -48,6 +48,16 @@ jobs:
 
       - name: Install EF Core tool
         run: dotnet tool install --global dotnet-ef --version 10.*
+        
+      - name: Restore
+        run: dotnet restore FitnessTracker/FitnessTracker.csproj
+
+      - name: Build migration bundle
+        run: >
+          dotnet ef migrations bundle
+          --project FitnessTracker/FitnessTracker.csproj
+          --self-contained -r linux-x64
+          --output efbundle  
 
       - name: Build migration bundle
         run: >
