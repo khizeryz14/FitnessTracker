@@ -131,7 +131,7 @@ The Dockerfile is multi-stage (SDK image builds, ASP.NET runtime image runs as a
 
 ## Known limitations
 
-- A "day" is a UTC day; there are no per-user time zones yet.
+- A day is the user’s local day when the client sends tzOffsetMinutes, otherwise UTC.
 - Hydration is intake against a goal (about 35 ml per kg), not a time-decay model.
 - On the free host the app sleeps when idle, so the background worker only runs while it is awake. Running multiple instances would need a proper job scheduler.
 - Tests use SQLite, which cannot catch Postgres-specific behavior.
