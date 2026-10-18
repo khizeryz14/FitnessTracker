@@ -1,4 +1,4 @@
 public interface IDashboardService
 {
-    Task<DashboardDto?> GetAsync(Guid userId, DateOnly? date);
+    Task<DashboardDto?> GetAsync(Guid userId, DateOnly? date, int tzOffsetMinutes);
 }

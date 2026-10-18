@@ -27,6 +27,7 @@ public class FoodLogController : ControllerBase
             QuantityGrams = entry.QuantityGrams,
             LoggedTimestamp = entry.LoggedTimestamp,
             CaloriesConsumed = entry.CaloriesConsumed,
+            FoodName = entry.FoodItem.Name
         };
         return Created($"/api/foodlog/{entry.Id}", foodEntry);
     }
@@ -48,7 +49,8 @@ public class FoodLogController : ControllerBase
                 FoodItemId = e.FoodItemId,
                 QuantityGrams = e.QuantityGrams,
                 LoggedTimestamp = e.LoggedTimestamp,
-                CaloriesConsumed = e.CaloriesConsumed
+                CaloriesConsumed = e.CaloriesConsumed,
+                FoodName = e.FoodItem.Name
             }).ToList(),
             Page = entries.Page,
             PageSize = entries.PageSize,

@@ -23,7 +23,8 @@ public class FoodLogService : IFoodLogService
             FoodItemId = dto.FoodItemId,
             QuantityGrams = dto.QuantityGrams,
             LoggedTimestamp = dto.LoggedTimestamp,
-            CaloriesConsumed = caloriesConsumed
+            CaloriesConsumed = caloriesConsumed,
+            FoodItem = foodItem
         };
 
         _db.FoodLogEntries.Add(logEntry);
@@ -40,7 +41,7 @@ public class FoodLogService : IFoodLogService
         if (from.HasValue) query = query.Where(f => f.LoggedTimestamp >= from.Value);
         if (to.HasValue)   query = query.Where(f => f.LoggedTimestamp <= to.Value);
 
-        query = query.OrderByDescending(f => f.LoggedTimestamp).Skip((page - 1) * pageSize).Take(pageSize);
+        query = query.Include(f => f.FoodItem).OrderByDescending(f => f.LoggedTimestamp).Skip((page - 1) * pageSize).Take(pageSize);
         var totalCount = await query.CountAsync();
 
         var queryItems = await query.ToListAsync();

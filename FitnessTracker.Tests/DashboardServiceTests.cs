@@ -41,4 +41,35 @@ public class DashboardServiceTests
         Assert.Equal(824.375, result.BmrBurnedSoFar, precision: 2);    // noon = half the day
         Assert.Equal(-524.375, result.NetCalories, precision: 2);      // 500 - (200 + 824.375)
     }
+
+    [Fact]
+    public async Task GetAsync_WithTimezoneOffset_UsesLocalDay()
+    {
+        using var testDb = new TestDb();
+        var db = testDb.Context;
+        var user = new User
+        {
+            Id = Guid.NewGuid(), Name = "T", Email = "t@test.com", PasswordHash = "x",
+            Height = 1.75, Weight = 70, Sex = Sex.Male,
+            DateOfBirth = new DateOnly(1996, 10, 13), ActivityLevel = ActivityLevel.Average
+        };
+        var food = new FoodItem { Id = Guid.NewGuid(), Name = "Test", CaloriesPer100g = 100 };
+        db.Users.Add(user);
+        db.FoodItems.Add(food);
+
+        db.FoodLogEntries.Add(new FoodLogEntry
+        {
+            Id = Guid.NewGuid(), UserId = user.Id, FoodItemId = food.Id,
+            QuantityGrams = 300, CaloriesConsumed = 300,
+            LoggedTimestamp = new DateTime(2026, 10, 12, 20, 0, 0, DateTimeKind.Utc)
+        });
+        await db.SaveChangesAsync();
+
+        var clock = new FakeTimeProvider(new DateTimeOffset(2026, 10, 13, 12, 0, 0, TimeSpan.Zero));
+        var result = await new DashboardService(db, clock).GetAsync(user.Id, null, tzOffsetMinutes: 300);
+
+        Assert.Equal(new DateOnly(2026, 10, 13), result!.Date);
+        Assert.Equal(300, result.CaloriesIn, precision: 2);
+        Assert.Equal(1648.75 * 17 / 24, result.BmrBurnedSoFar, precision: 2);   // 17:00 local
+    }
 }

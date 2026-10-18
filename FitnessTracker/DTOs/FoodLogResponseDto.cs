@@ -6,4 +6,5 @@ public class FoodLogResponseDto
             public double QuantityGrams {get; set;}
             public DateTime LoggedTimestamp {get; set;}
             public double CaloriesConsumed {get; set;}
+            public string FoodName {get; set;}
 }

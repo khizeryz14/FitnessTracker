@@ -11,16 +11,19 @@ public class DashboardService : IDashboardService
         _clock = clock;
     }
 
-    public async Task<DashboardDto?> GetAsync(Guid userId, DateOnly? date)
+    public async Task<DashboardDto?> GetAsync(Guid userId, DateOnly? date, int tzOffsetMinutes = 0)
     {
         var user = await _db.Users.FindAsync(userId);
         if (user is null) return null;
 
+        tzOffsetMinutes = Math.Clamp(tzOffsetMinutes, -720, 840);
         var now = _clock.GetUtcNow().UtcDateTime;
-        var day = date ?? DateOnly.FromDateTime(now);
+        var localNow = now.AddMinutes(tzOffsetMinutes);
+        var day = date ?? DateOnly.FromDateTime(localNow);
 
-        // UTC day window: [start, end)
-        var start = DateTime.SpecifyKind(day.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
+        // the user's local midnight, expressed as a UTC instant
+        var start = DateTime.SpecifyKind(
+            day.ToDateTime(TimeOnly.MinValue).AddMinutes(-tzOffsetMinutes), DateTimeKind.Utc);
         var end = start.AddDays(1);
 
         var caloriesIn = await _db.FoodLogEntries

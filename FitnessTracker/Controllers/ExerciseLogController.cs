@@ -25,7 +25,8 @@ public class ExerciseLogController : ControllerBase
                 ExerciseTypeId = entry.ExerciseTypeId,
                 DurationMinutes = entry.DurationMinutes,
                 LoggedTimestamp = entry.LoggedTimestamp,
-                CaloriesBurned = entry.CaloriesBurned
+                CaloriesBurned = entry.CaloriesBurned,
+                ExerciseName = entry.ExerciseType.Name
             };
 
         return Created($"/api/exerciselog/{entry.Id}", response);
@@ -61,7 +62,8 @@ public class ExerciseLogController : ControllerBase
                 ExerciseTypeId = e.ExerciseTypeId,
                 DurationMinutes = e.DurationMinutes,
                 LoggedTimestamp = e.LoggedTimestamp,
-                CaloriesBurned = e.CaloriesBurned
+                CaloriesBurned = e.CaloriesBurned,
+                ExerciseName = e.ExerciseType.Name
             }).ToList(),
             Page = result.Page,
             PageSize = result.PageSize,

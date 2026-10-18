@@ -28,7 +28,8 @@ public class ExerciseLogService : IExerciseLogService
             UserId = userId,
             DurationMinutes = dto.DurationMinutes,
             LoggedTimestamp = dto.LoggedTimestamp,
-            CaloriesBurned = caloriesBurned
+            CaloriesBurned = caloriesBurned,
+            ExerciseType = exerciseType
         };
 
         _db.ExerciseLogEntries.Add(logEntry);
@@ -66,6 +67,7 @@ public class ExerciseLogService : IExerciseLogService
         var totalCount = await query.CountAsync();
 
         var items = await query
+            .Include(e => e.ExerciseType)
             .OrderByDescending(e => e.LoggedTimestamp)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)

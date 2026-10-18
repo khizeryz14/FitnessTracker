@@ -5,4 +5,5 @@ public class ExerciseLogResponseDto
     public double DurationMinutes { get; set; }
     public DateTime LoggedTimestamp { get; set; }
     public double CaloriesBurned { get; set; }
+    public string ExerciseName {get; set; }
 }

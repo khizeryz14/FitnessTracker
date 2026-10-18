@@ -12,11 +12,11 @@ public class DashboardController : ControllerBase
 
     private Guid GetUserId() =>
         Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
+        
     [HttpGet]
-    public async Task<IActionResult> Get(DateOnly? date)
+    public async Task<IActionResult> Get(DateOnly? date, int tzOffsetMinutes = 0)
     {
-        var dashboard = await _service.GetAsync(GetUserId(), date);
+        var dashboard = await _service.GetAsync(GetUserId(), date, tzOffsetMinutes);
         return dashboard is null ? NotFound() : Ok(dashboard);
     }
 }
