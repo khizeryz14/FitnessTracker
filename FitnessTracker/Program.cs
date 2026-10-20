@@ -47,6 +47,7 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.Configure<ReminderOptions>(builder.Configuration.GetSection("Reminders"));
 builder.Services.AddScoped<IReminderService, ReminderService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IExerciseTypeService, ExerciseTypeService>();
 builder.Services.AddHostedService<HydrationReminderWorker>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddSignalR();
